@@ -1,0 +1,104 @@
+Implement a Player Agent HTTP server for Even/Odd game using Python FastAPI.
+
+REQUIREMENTS:
+- HTTP servers on localhost:8101-8104 (configurable port), endpoint /mcp
+- Handle JSON-RPC 2.0 POST requests
+- Register with League Manager
+- Participate in games by making strategic choices
+- Track personal game history
+
+CORE FUNCTIONALITY:
+
+1. PLAYER REGISTRATION
+   - Send LEAGUE_REGISTER_REQUEST to league_manager (http://localhost:8000/mcp)
+   - Include metadata: {"display_name": "Player X", "strategy": "random", "agent_endpoint": "http://localhost:810X/mcp"}
+   - Store received player_id and auth_token from response
+
+2. RECEIVE ANNOUNCEMENTS
+   - Listen for ROUND_ANNOUNCEMENT from league_manager
+   - Store upcoming matches from schedule
+   - Listen for LEAGUE_STANDINGS_UPDATE to track current rankings
+   - Listen for LEAGUE_COMPLETED to see final results
+
+3. JOIN GAMES
+   - Receive GAME_INVITATION from referee
+   - Send GAME_JOIN_ACK to confirm participation
+   - Store match_id and opponent information
+
+4. MAKE CHOICES
+   - Receive CHOOSE_PARITY_CALL from referee
+   - Choose "even" or "odd" based on strategy
+   - Send CHOOSE_PARITY_RESPONSE within timeout (30 seconds)
+
+5. RECEIVE RESULTS
+   - Receive GAME_OVER from referee
+   - Update internal statistics (wins/losses/draws)
+   - Log game results
+
+STRATEGY IMPLEMENTATIONS:
+
+Random Strategy:
+```python
+import random
+def choose_parity():
+    return random.choice(["even", "odd"])
+```
+
+Alternating Strategy:
+```python
+def choose_parity(last_choice):
+    return "odd" if last_choice == "even" else "even"
+```
+
+History-Based Strategy:
+```python
+def choose_parity(history):
+    # Count recent outcomes
+    even_wins = sum(1 for h in history if h['winner_choice'] == 'even')
+    odd_wins = sum(1 for h in history if h['winner_choice'] == 'odd')
+    return "even" if even_wins >= odd_wins else "odd"
+```
+
+MESSAGE STRUCTURE:
+{
+  "protocol": "league.v2",
+  "message_type": "<TYPE>",
+  "sender": "player:P01",
+  "timestamp": "<ISO 8601 UTC>",
+  "conversation_id": "<unique_id>",
+  "auth_token": "<token>",
+  ... specific fields ...
+}
+
+PLAYER FLOW:
+1. Register with league_manager
+2. Wait for ROUND_ANNOUNCEMENT
+3. Receive GAME_INVITATION from referee
+4. Send GAME_JOIN_ACK
+5. Receive CHOOSE_PARITY_CALL
+6. Send CHOOSE_PARITY_RESPONSE with choice
+7. Receive GAME_OVER with results
+8. Repeat for next matches
+9. Receive LEAGUE_COMPLETED when league ends
+
+IMPLEMENTATION REQUIREMENTS:
+- Use FastAPI for HTTP server
+- Use requests library for HTTP POST to other agents
+- Accept port number as command-line argument
+- Log all messages to JSON Lines file
+- Maintain game history: [{match_id, opponent, my_choice, opponent_choice, number, result}]
+- Track personal statistics: {wins, losses, draws, total_games}
+- Generate ISO 8601 UTC timestamps
+- Include auth_token in all outgoing requests
+- Respond to CHOOSE_PARITY_CALL within 30 seconds
+
+CONFIGURABLE PARAMETERS:
+- player_display_name: Command-line argument or config
+- port: Command-line argument (default 8101)
+- strategy: "random", "alternating", or "history" (command-line argument)
+
+STARTUP SEQUENCE:
+1. Start HTTP server on specified port
+2. Wait 2 seconds for server to be ready
+3. Register with league_manager
+4. Wait for messages

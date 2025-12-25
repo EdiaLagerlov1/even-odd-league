@@ -1,0 +1,193 @@
+# ===================================
+# Python Virtual Environments
+# ===================================
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# ===================================
+# Python Cache & Compiled Files
+# ===================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyo
+*.pyd
+.Python
+
+# ===================================
+# Distribution / Packaging
+# ===================================
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ===================================
+# uv (Python Package Manager)
+# ===================================
+.uv/
+uv.lock
+
+# ===================================
+# Testing & Coverage
+# ===================================
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.hypothesis/
+.pytest_cache/
+htmlcov/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# ===================================
+# JSONL Logs (League Specific)
+# ===================================
+jsonl/*.jsonl
+jsonl/
+
+# ===================================
+# League Runtime Files
+# ===================================
+.league_window_ids
+
+# ===================================
+# IDEs & Editors
+# ===================================
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+.idea_modules/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.vim/
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# ===================================
+# Operating System Files
+# ===================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+.directory
+.Trash-*
+.nfs*
+
+# ===================================
+# Environment & Secrets
+# ===================================
+.env
+.env.local
+.env.*.local
+.envrc
+*.key
+*.pem
+*.cert
+secrets/
+credentials/
+
+# ===================================
+# Database
+# ===================================
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# ===================================
+# Documentation
+# ===================================
+docs/_build/
+site/
+.mkdocs_cache/
+
+# ===================================
+# Backup & Temporary Files
+# ===================================
+*.bak
+*.tmp
+*.temp
+*~
+.~*
+.swn
+.swm

@@ -1,0 +1,79 @@
+Implement a Referee HTTP server for managing Even/Odd games using Python FastAPI.
+
+REQUIREMENTS:
+- HTTP server on localhost:8001, endpoint /mcp
+- Handle JSON-RPC 2.0 POST requests
+- Register with League Manager
+- Manage individual game sessions
+- Enforce game rules and determine winners
+
+CORE FUNCTIONALITY:
+
+1. REFEREE REGISTRATION
+   - Send REFEREE_REGISTER_REQUEST to league_manager (http://localhost:8000/mcp)
+   - Include metadata: {"display_name": "Referee Alpha", "version": "2.0"}
+   - Store received referee_id and auth_token from response
+
+2. GAME INVITATION
+   - Receive match assignment from league manager
+   - Send GAME_INVITATION to both players
+   - Wait for GAME_JOIN_ACK from both players
+   - Track game state: WAITING_FOR_PLAYERS → COLLECTING_CHOICES → COMPLETED
+
+3. COLLECT CHOICES
+   - Send CHOOSE_PARITY_CALL to each player
+   - Collect CHOOSE_PARITY_RESPONSE from players
+   - Validate choices are "even" or "odd"
+   - Handle timeouts (30 seconds per player response)
+
+4. DETERMINE WINNER
+   - Generate random number (1-100)
+   - Check if number is even or odd
+   - Determine winner based on matching choice
+   - Handle draw if both choose same and neither matches
+
+5. GAME COMPLETION
+   - Send GAME_OVER to both players with results
+   - Include: winner_id, number_drawn, p1_choice, p2_choice
+   - Send MATCH_RESULT_REPORT to league_manager
+
+6. ERROR HANDLING
+   - Send GAME_ERROR for timeouts, invalid choices, disconnections
+   - Implement retry logic (max 3 retries)
+   - Award technical loss if player fails to respond after retries
+
+MESSAGE STRUCTURE:
+{
+  "protocol": "league.v2",
+  "message_type": "<TYPE>",
+  "sender": "referee:REF01",
+  "timestamp": "<ISO 8601 UTC>",
+  "conversation_id": "<unique_id>",
+  "match_id": "<match_id>",
+  ... specific fields ...
+}
+
+GAME FLOW:
+1. Receive match assignment from league manager
+2. Send GAME_INVITATION → receive GAME_JOIN_ACK (both players)
+3. Send CHOOSE_PARITY_CALL → receive CHOOSE_PARITY_RESPONSE (both players)
+4. Generate random number (random.randint(1, 100))
+5. Determine winner: if number % 2 == 0 then "even" wins, else "odd" wins
+6. Send GAME_OVER to players
+7. Send MATCH_RESULT_REPORT to league_manager
+
+EVEN/ODD RULES:
+- Each player chooses "even" or "odd"
+- Referee draws random number (1-100)
+- If number is even (number % 2 == 0): player who chose "even" wins
+- If number is odd (number % 2 == 1): player who chose "odd" wins
+- Draw if both players choose the same option
+
+IMPLEMENTATION REQUIREMENTS:
+- Use FastAPI for HTTP server
+- Use requests library for HTTP POST to other agents
+- Log all messages to JSON Lines file
+- Track game state machine: WAITING_FOR_PLAYERS → COLLECTING_CHOICES → DETERMINING_WINNER → COMPLETED
+- Implement 30-second timeout for player responses
+- Generate unique conversation_id for each match
+- Send auth_token in all requests

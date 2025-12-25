@@ -1,0 +1,70 @@
+Implement a League Manager HTTP server for an Even/Odd game league system using Python FastAPI.
+
+REQUIREMENTS:
+- HTTP server on localhost:8000, endpoint /mcp
+- Handle JSON-RPC 2.0 POST requests
+- Manage referee and player registrations
+- Create match schedules and manage rounds
+- Track standings and statistics
+
+CORE FUNCTIONALITY:
+
+1. REFEREE REGISTRATION
+   - Receive REFEREE_REGISTER_REQUEST from referees
+   - Generate unique referee_id and auth_token
+   - Store referee metadata (display_name, version)
+   - Return REFEREE_REGISTER_RESPONSE with referee_id and auth_token
+
+2. PLAYER REGISTRATION
+   - Receive LEAGUE_REGISTER_REQUEST from players  
+   - Generate unique player_id and auth_token
+   - Store player metadata (display_name, agent_endpoint, strategy)
+   - Return LEAGUE_REGISTER_RESPONSE with player_id and auth_token
+
+3. SCHEDULE CREATION
+   - Create round-robin schedule for all registered players
+   - Assign referee to each match
+   - Generate unique match_id for each game
+
+4. ROUND MANAGEMENT
+   - Send ROUND_ANNOUNCEMENT to all players with schedule
+   - Track match completion
+   - Send ROUND_COMPLETED when all matches finish
+
+5. STANDINGS UPDATE
+   - Receive MATCH_RESULT_REPORT from referee
+   - Update player wins/losses/draws
+   - Send LEAGUE_STANDINGS_UPDATE to all players
+
+6. LEAGUE COMPLETION
+   - Send LEAGUE_COMPLETED when all rounds finish
+   - Include final standings with winner
+
+7. QUERY HANDLING
+   - Process LEAGUE_QUERY requests (GET_STANDINGS, GET_SCHEDULE, GET_NEXT_MATCH, GET_PLAYER_STATS)
+   - Return LEAGUE_QUERY_RESPONSE with requested data
+
+MESSAGE STRUCTURE (all messages):
+{
+  "protocol": "league.v2",
+  "message_type": "<TYPE>",
+  "sender": "league_manager",
+  "timestamp": "<ISO 8601 UTC>",
+  "conversation_id": "<unique_id>",
+  ... specific fields ...
+}
+
+IMPLEMENTATION REQUIREMENTS:
+- Use FastAPI for HTTP server
+- Validate auth_token on incoming requests
+- Log all messages to JSON Lines file (one JSON object per line)
+- Handle timeouts and errors gracefully
+- Store state in memory (dict/dataclass structures)
+- Generate ISO 8601 UTC timestamps
+- Return proper HTTP status codes (200 for success, 400/500 for errors)
+
+DATA STRUCTURES:
+- Registry of referees: {referee_id: {metadata, auth_token, endpoint}}
+- Registry of players: {player_id: {metadata, auth_token, endpoint, wins, losses, draws}}
+- Schedule: list of matches {match_id, round_id, player1_id, player2_id, referee_id, status}
+- Current round tracking
