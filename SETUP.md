@@ -1,6 +1,6 @@
 # Even/Odd League Setup Guide
 
-## Prerequisites
+### Prerequisites
 
 - Python 3.13+
 - [uv](https://github.com/astral-sh/uv) - Fast Python package installer
